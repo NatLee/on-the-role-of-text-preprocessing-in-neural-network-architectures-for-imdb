@@ -16,6 +16,7 @@ authors:
     family-names: Lee
     alias: NatLee
 version: 1.0.0
+license: Apache-2.0
 date-released: 2026-11-04
 repository-code: "https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb"
 url: "https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb"

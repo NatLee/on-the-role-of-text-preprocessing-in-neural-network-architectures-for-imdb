@@ -3,7 +3,7 @@
 #   docker run --rm -v "$PWD/data:/work/data" -v "$PWD/runs:/work/runs" preproc-imdb train --per-class 500
 FROM python:3.12-slim
 WORKDIR /opt/preproc-imdb
-COPY pyproject.toml README.md ./
+COPY pyproject.toml README.md LICENSE NOTICE ./
 COPY src ./src
 RUN pip install --no-cache-dir .
 WORKDIR /work
