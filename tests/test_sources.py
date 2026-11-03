@@ -8,7 +8,7 @@ import pytest
 from conftest import write_variant
 
 from preproc_imdb import sources
-from preproc_imdb.data import LABELS, SPLITS, available_variants, variant_file
+from preproc_imdb.data import LABELS, PAPER_VARIANTS, SPLITS, available_variants, variant_file
 from preproc_imdb.sources import ARCHIVE_FOLDERS, ChecksumError, Source, download_variants, fetch, install_variants
 
 
@@ -83,4 +83,5 @@ def test_pinned_sources_look_sane():
     for source in [sources.VARIANTS_ARCHIVE, *sources.EMBEDDINGS.values()]:
         assert len(source.sha256) == 64 and source.size > 0
         assert source.url.startswith("https://")
-    assert set(sources.EMBEDDINGS) == set(ARCHIVE_FOLDERS.values())
+    # the four paper variants are named the same everywhere: data folders, archive mapping, embeddings
+    assert set(sources.EMBEDDINGS) == set(ARCHIVE_FOLDERS.values()) == set(PAPER_VARIANTS)
