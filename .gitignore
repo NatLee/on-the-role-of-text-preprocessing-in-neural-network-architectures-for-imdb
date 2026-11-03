@@ -1,10 +1,22 @@
-
+# OS
 Desktop.ini
 .DS_Store
 
+# Python
+__pycache__/
+*.egg-info/
+build/
+dist/
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Experiment outputs
+runs/
+
+# Downloads: `preproc-imdb download` puts the other variants and the embeddings here.
+# Only the multiword variant ships with the repo.
+data/IMDb/*
+!data/IMDb/multiword/
+data/embeddings/
 *.bin
-
-*.pkl
-
-models/
-logs-pred/

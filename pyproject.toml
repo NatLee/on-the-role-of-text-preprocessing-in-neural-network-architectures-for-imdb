@@ -1,0 +1,51 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "preproc-imdb"
+version = "1.0.0"
+description = "Reproducible IMDb experiments for 'On the Role of Text Preprocessing in Neural Network Architectures' (CNN and CNN+LSTM in Keras)"
+readme = "README.md"
+requires-python = ">=3.11,<3.14"
+authors = [{ name = "Nat Lee" }]
+keywords = ["text preprocessing", "sentiment analysis", "imdb", "cnn", "lstm", "keras", "reproducibility"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# Exact versions: the numbers in the README were produced with these.
+dependencies = [
+    "keras==3.15.1",
+    "numpy==2.4.4",
+    "tensorflow==2.21.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest==9.1.1", "ruff==0.17.1"]
+
+[project.scripts]
+preproc-imdb = "preproc_imdb.cli:main"
+
+[project.urls]
+Repository = "https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb"
+Paper = "https://aclanthology.org/W18-5406/"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = [
+    # TensorFlow 2.21 tensors do not take numpy 2's copy= argument yet; harmless, but printed once per batch.
+    "ignore:__array__ implementation doesn't accept a copy keyword:DeprecationWarning",
+]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]

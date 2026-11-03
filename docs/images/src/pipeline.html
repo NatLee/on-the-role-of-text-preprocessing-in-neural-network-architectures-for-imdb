@@ -1,0 +1,147 @@
+<!doctype html>
+<!--
+  README diagram: from an IMDb review to a test accuracy. Render the light and dark versions (#dark picks the
+  dark theme) with a Chromium-based browser, e.g.
+    msedge --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=960,560
+           --default-background-color=00000000 --virtual-time-budget=5000
+           --screenshot=pipeline-dark.png "file:///…/pipeline.html#dark"
+  and shrink the result to a 128-colour palette (ImageMagick):
+    magick pipeline-dark.png -strip -dither None -colors 128 PNG8:pipeline-dark.png
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>preproc-imdb pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f6f8fa; --ink: #1f2328; --muted: #59636e; --line: #d1d9e0; --card: #ffffff;
+    --blue: #0969da; --green: #1a7f37; --violet: #8250df; --shadow: 0 1px 2px rgba(31,35,40,.06), 0 6px 18px rgba(31,35,40,.06);
+    --tint1: rgba(9,105,218,.10); --tint2: rgba(130,80,223,.08); --wire: #afb8c1; --hi: rgba(9,105,218,.12);
+  }
+  .dark {
+    --bg: #0d1117; --bg2: #151b23; --ink: #f0f6fc; --muted: #9198a1; --line: #3d444d; --card: #151b23;
+    --blue: #4493f8; --green: #3fb950; --violet: #ab7df8; --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --tint1: rgba(68,147,248,.16); --tint2: rgba(171,125,248,.12); --wire: #656c76; --hi: rgba(68,147,248,.20);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: transparent; }
+  body { width: 960px; height: 560px; font-family: Inter, "Segoe UI", sans-serif; color: var(--ink); }
+  .frame { position: relative; width: 960px; height: 560px; border-radius: 22px; overflow: hidden;
+           border: 1px solid var(--line);
+           background: radial-gradient(520px 300px at 94% 6%, var(--tint1), transparent 70%),
+                       radial-gradient(460px 280px at 2% 100%, var(--tint2), transparent 70%), var(--bg); }
+  .dots { position: absolute; inset: 0; opacity: .5;
+          background-image: radial-gradient(var(--line) 1px, transparent 1.2px); background-size: 22px 22px;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 60%, #000 100%); }
+
+  header { position: absolute; left: 44px; top: 34px; }
+  h1 { margin: 0; font-size: 34px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .tag { margin: 9px 0 0; font-size: 16px; color: var(--muted); }
+  .tag b { color: var(--ink); font-weight: 600; }
+  .cmd { position: absolute; right: 44px; top: 40px; font-family: "JetBrains Mono", Consolas, monospace; font-size: 13px;
+         padding: 8px 14px; border-radius: 10px; border: 1px solid var(--line); background: var(--card); box-shadow: var(--shadow); }
+  .cmd span { color: var(--muted); margin-right: 8px; }
+
+  .node { position: absolute; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+          box-shadow: var(--shadow); padding: 14px 16px; }
+  .label { font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--muted);
+           display: flex; align-items: center; gap: 8px; }
+  .label i { width: 8px; height: 8px; border-radius: 50%; background: var(--blue); flex: none; }
+  .model .label i { background: var(--violet); }
+  .result .label i { background: var(--green); }
+  .title { font-size: 19px; font-weight: 700; letter-spacing: -0.02em; margin-top: 9px; }
+  .mono { font-family: "JetBrains Mono", Consolas, monospace; font-size: 13px; margin-top: 9px; white-space: nowrap; }
+  .sub { font-size: 12.5px; color: var(--muted); margin-top: 7px; line-height: 1.45; }
+  .sub code { font-family: "JetBrains Mono", Consolas, monospace; font-size: 11.5px; color: var(--ink); white-space: nowrap; }
+
+  .variants { margin-top: 10px; display: grid; grid-template-columns: 96px 1fr; row-gap: 7px; align-items: center; }
+  .pill { font-family: "JetBrains Mono", Consolas, monospace; font-size: 11.5px; font-weight: 600; padding: 3px 9px;
+          border-radius: 999px; border: 1px solid var(--line); background: var(--bg2); justify-self: start; }
+  .tokens { font-family: "JetBrains Mono", Consolas, monospace; font-size: 12.5px; white-space: nowrap; }
+  .tokens em { font-style: normal; color: var(--blue); font-weight: 600; background: var(--hi); border-radius: 4px; padding: 0 3px; }
+  .heads { display: flex; gap: 8px; margin-top: 10px; }
+  .heads .pill { border-color: var(--violet); color: var(--violet); background: transparent; }
+
+  #review   { left: 44px;  top: 128px; width: 196px; height: 222px; }
+  #variant  { left: 280px; top: 128px; width: 414px; height: 222px; }
+  #ids      { left: 734px; top: 128px; width: 182px; height: 222px; }
+  #embed    { left: 44px;  top: 400px; width: 262px; height: 128px; }
+  #model    { left: 349px; top: 400px; width: 262px; height: 128px; }
+  #eval     { left: 654px; top: 400px; width: 262px; height: 128px; }
+
+  svg.wires { position: absolute; inset: 0; }
+  .wire { fill: none; stroke: var(--wire); stroke-width: 2; stroke-dasharray: 5 6; }
+  .head { fill: var(--wire); }
+</style>
+</head>
+<body>
+<script>if (location.hash === '#dark') document.documentElement.className = 'dark';</script>
+<div class="frame">
+  <div class="dots"></div>
+
+  <header>
+    <h1>From review to accuracy</h1>
+    <p class="tag">Pick <b>one preprocessing</b> and <b>one model</b>; everything else stays fixed.</p>
+  </header>
+  <div class="cmd"><span>$</span>preproc-imdb train -p vanilla -m cnn-lstm</div>
+
+  <svg class="wires" width="960" height="560">
+    <path class="wire" d="M242 239 H272"/>
+    <path class="head" d="M278 239 l-9 -5 v10 z"/>
+    <path class="wire" d="M696 239 H726"/>
+    <path class="head" d="M732 239 l-9 -5 v10 z"/>
+    <path class="wire" d="M825 352 V374 H175 V392"/>
+    <path class="head" d="M175 398 l-5 -9 h10 z"/>
+    <path class="wire" d="M308 464 H341"/>
+    <path class="head" d="M347 464 l-9 -5 v10 z"/>
+    <path class="wire" d="M613 464 H646"/>
+    <path class="head" d="M652 464 l-9 -5 v10 z"/>
+  </svg>
+
+  <div class="node" id="review">
+    <div class="label"><i></i>1 · IMDb reviews</div>
+    <div class="title">50,000 reviews</div>
+    <div class="sub">25,000 to train, 25,000 to test, half positive and half negative (Maas et al., 2011)</div>
+    <div class="sub">one review per line in<br><code>data/IMDb/&lt;variant&gt;/</code></div>
+  </div>
+
+  <div class="node" id="variant">
+    <div class="label"><i></i>2 · Preprocessing variant</div>
+    <div class="variants">
+      <span class="pill">vanilla</span><span class="tokens">Apple is asking … United States .</span>
+      <span class="pill">lowercased</span><span class="tokens"><em>apple</em> is asking … <em>united states</em> .</span>
+      <span class="pill">lemmatized</span><span class="tokens">Apple <em>be ask</em> … United States .</span>
+      <span class="pill">multiword</span><span class="tokens">Apple is asking … <em>United_States</em> .</span>
+    </div>
+    <div class="sub">Text preprocessed by the paper's authors (Stanford CoreNLP, Google News phrases). <code>multiword</code> ships with the repo, <code>download</code> adds the rest.</div>
+  </div>
+
+  <div class="node" id="ids">
+    <div class="label"><i></i>3 · Word ids</div>
+    <div class="mono">[0 0 … 2 61 1 845]</div>
+    <div class="sub">Training words get ids 2, 3, … by frequency; 0 pads, 1 marks an unknown word. 20,000 ids in all.</div>
+    <div class="sub">Padded or cut at the start, to the longest review by default.</div>
+  </div>
+
+  <div class="node" id="embed">
+    <div class="label"><i></i>4 · Embedding</div>
+    <div class="mono">20,000 × 300</div>
+    <div class="sub">Random, or the authors' UMBC word2vec vectors with the same preprocessing.</div>
+  </div>
+
+  <div class="node model" id="model">
+    <div class="label"><i></i>5 · Model</div>
+    <div class="heads"><span class="pill">cnn</span><span class="pill">cnn-lstm</span></div>
+    <div class="sub">Convolution and max pooling, with or without a BiLSTM, then one sigmoid unit.</div>
+  </div>
+
+  <div class="node result" id="eval">
+    <div class="label"><i></i>6 · Evaluation</div>
+    <div class="title">Test accuracy</div>
+    <div class="sub">All 25,000 test reviews, mean over <code>--runs</code> seeds, saved to <code>results.json</code>.</div>
+  </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: |
+          ruff check .
+          ruff format --check .
+      - name: Unit and smoke tests
+        run: pytest
+      - name: Train both models on a small slice of IMDb
+        # The same command a reader would type, on 200 reviews per class and 1 epoch.
+        run: |
+          for model in cnn cnn-lstm; do
+            preproc-imdb train --model "$model" --per-class 200 --max-len 200 --epochs 1 --output-dir runs
+          done
+
+  docker:
+    # The Dockerfile is the reference environment for the README numbers, so make sure it still builds and runs.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image
+        run: docker build -t preproc-imdb .
+      - name: Train on a small slice inside the container
+        run: >
+          docker run --rm -v "$PWD/data:/work/data:ro" preproc-imdb
+          train --per-class 50 --max-len 100 --epochs 1 --output-dir /tmp/runs
