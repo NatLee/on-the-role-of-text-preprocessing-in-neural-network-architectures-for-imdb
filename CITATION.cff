@@ -1,0 +1,111 @@
+cff-version: 1.2.0
+message: >-
+  If you use this code, please cite it as below. It reproduces experiments from the paper by
+  Camacho-Collados and Pilehvar (2018), so please cite that paper as well; it is the first entry
+  under "references".
+type: software
+title: "preproc-imdb: reproducible IMDb experiments for 'On the Role of Text Preprocessing in Neural Network Architectures'"
+abstract: >-
+  An unofficial, reproducible re-implementation of the IMDb sentiment experiments in
+  Camacho-Collados and Pilehvar (2018). It trains the paper's CNN and CNN+LSTM classifiers in Keras on
+  four preprocessing variants of the IMDb reviews (vanilla, lowercased, lemmatized, multiword), with
+  optional pre-trained UMBC word2vec embeddings, pinned dependencies, seeded runs and checksummed
+  downloads of the authors' data.
+authors:
+  - given-names: Nat
+    family-names: Lee
+    alias: NatLee
+version: 1.0.0
+date-released: 2026-11-04
+repository-code: "https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb"
+url: "https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb"
+keywords:
+  - text preprocessing
+  - sentiment analysis
+  - IMDb
+  - convolutional neural network
+  - LSTM
+  - Keras
+  - reproducibility
+references:
+  - type: conference-paper
+    title: "On the Role of Text Preprocessing in Neural Network Architectures: An Evaluation Study on Text Categorization and Sentiment Analysis"
+    authors:
+      - given-names: Jose
+        family-names: Camacho-Collados
+      - given-names: Mohammad Taher
+        family-names: Pilehvar
+    editors:
+      - given-names: Tal
+        family-names: Linzen
+      - given-names: Grzegorz
+        family-names: Chrupała
+      - given-names: Afra
+        family-names: Alishahi
+    collection-title: "Proceedings of the 2018 EMNLP Workshop BlackboxNLP: Analyzing and Interpreting Neural Networks for NLP"
+    collection-type: proceedings
+    conference:
+      name: "2018 EMNLP Workshop BlackboxNLP"
+      city: Brussels
+      country: BE
+      date-start: 2018-11-01
+      date-end: 2018-11-01
+    publisher:
+      name: Association for Computational Linguistics
+    year: 2018
+    month: 11
+    start: 40
+    end: 46
+    doi: 10.18653/v1/W18-5406
+    url: "https://aclanthology.org/W18-5406/"
+    identifiers:
+      - type: other
+        value: "arXiv:1707.01780"
+        description: The arXiv preprint of the paper
+  - type: conference-paper
+    title: "Towards a Seamless Integration of Word Senses into Downstream NLP Applications"
+    notes: "The paper of the sensecnn code (https://github.com/pilehvar/sensecnn) that this repository started from."
+    authors:
+      - given-names: Mohammad Taher
+        family-names: Pilehvar
+      - given-names: Jose
+        family-names: Camacho-Collados
+      - given-names: Roberto
+        family-names: Navigli
+      - given-names: Nigel
+        family-names: Collier
+    collection-title: "Proceedings of the 55th Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)"
+    collection-type: proceedings
+    publisher:
+      name: Association for Computational Linguistics
+    year: 2017
+    month: 7
+    start: 1857
+    end: 1869
+    doi: 10.18653/v1/P17-1170
+    url: "https://aclanthology.org/P17-1170/"
+  - type: conference-paper
+    title: "Learning Word Vectors for Sentiment Analysis"
+    notes: "The paper that introduced the IMDb Large Movie Review Dataset used here."
+    authors:
+      - given-names: Andrew L.
+        family-names: Maas
+      - given-names: Raymond E.
+        family-names: Daly
+      - given-names: Peter T.
+        family-names: Pham
+      - given-names: Dan
+        family-names: Huang
+      - given-names: Andrew Y.
+        family-names: Ng
+      - given-names: Christopher
+        family-names: Potts
+    collection-title: "Proceedings of the 49th Annual Meeting of the Association for Computational Linguistics: Human Language Technologies"
+    collection-type: proceedings
+    publisher:
+      name: Association for Computational Linguistics
+    year: 2011
+    month: 6
+    start: 142
+    end: 150
+    url: "https://aclanthology.org/P11-1015/"
