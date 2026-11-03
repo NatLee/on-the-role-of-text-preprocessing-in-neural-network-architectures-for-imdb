@@ -5,7 +5,7 @@ This product is an unofficial, reproducible re-implementation of the IMDb experi
 "On the Role of Text Preprocessing in Neural Network Architectures: An Evaluation Study on
 Text Categorization and Sentiment Analysis" by Jose Camacho-Collados and Mohammad Taher
 Pilehvar (BlackboxNLP 2018, https://doi.org/10.18653/v1/W18-5406).
-https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb
+https://github.com/NatLee/preproc-imdb-study
 
 If you use this software or results produced with it, please cite both this software and
 the original paper. CITATION.cff and the "How to cite" section of README.md have the

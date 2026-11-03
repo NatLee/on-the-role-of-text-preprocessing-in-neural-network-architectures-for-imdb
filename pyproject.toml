@@ -31,7 +31,7 @@ dev = ["pytest==9.1.1", "ruff==0.17.1"]
 preproc-imdb = "preproc_imdb.cli:main"
 
 [project.urls]
-Repository = "https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb"
+Repository = "https://github.com/NatLee/preproc-imdb-study"
 Paper = "https://aclanthology.org/W18-5406/"
 
 [tool.setuptools.packages.find]
