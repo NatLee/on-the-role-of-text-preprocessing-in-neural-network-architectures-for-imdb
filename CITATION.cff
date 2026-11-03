@@ -18,8 +18,8 @@ authors:
 version: 1.0.0
 license: Apache-2.0
 date-released: 2026-11-04
-repository-code: "https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb"
-url: "https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb"
+repository-code: "https://github.com/NatLee/preproc-imdb-study"
+url: "https://github.com/NatLee/preproc-imdb-study"
 keywords:
   - text preprocessing
   - sentiment analysis

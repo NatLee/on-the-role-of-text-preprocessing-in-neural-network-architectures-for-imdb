@@ -6,7 +6,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb/actions/workflows/test.yml"><img src="https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb/actions/workflows/test.yml/badge.svg" alt="Test"></a>
+  <a href="https://github.com/NatLee/preproc-imdb-study/actions/workflows/test.yml"><img src="https://github.com/NatLee/preproc-imdb-study/actions/workflows/test.yml/badge.svg" alt="Test"></a>
   <img src="https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue" alt="Python 3.11 | 3.12 | 3.13">
   <img src="https://img.shields.io/badge/Keras%203.15-TensorFlow%202.21-orange" alt="Keras 3.15 on TensorFlow 2.21">
   <a href="https://aclanthology.org/W18-5406/"><img src="https://img.shields.io/badge/paper-BlackboxNLP%202018-b31b1b" alt="Paper: BlackboxNLP 2018"></a>
@@ -33,8 +33,8 @@ code and was rewritten in 2026 (see [what changed](#differences-from-the-origina
 You need Python 3.11, 3.12 or 3.13 (TensorFlow 2.21 does not support other versions yet).
 
 ```bash
-git clone https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb.git
-cd on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb
+git clone https://github.com/NatLee/preproc-imdb-study.git
+cd preproc-imdb-study
 python -m pip install -e .
 ```
 
@@ -253,7 +253,7 @@ If this code helps your work, please cite **both** this repository and the paper
   title        = {{preproc-imdb}: Reproducible {IMDb} Experiments for ``On the Role of Text Preprocessing in Neural Network Architectures''},
   year         = {2026},
   version      = {1.0.0},
-  howpublished = {\url{https://github.com/NatLee/on-the-role-of-text-preprocessing-in-neural-network-architectures-for-imdb}},
+  howpublished = {\url{https://github.com/NatLee/preproc-imdb-study}},
 }
 
 @inproceedings{camacho-collados-pilehvar-2018-role,
