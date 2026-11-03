@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=69"]
+requires = ["setuptools>=77"]  # 77+ reads the SPDX "license" string below
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -7,6 +7,8 @@ name = "preproc-imdb"
 version = "1.0.0"
 description = "Reproducible IMDb experiments for 'On the Role of Text Preprocessing in Neural Network Architectures' (CNN and CNN+LSTM in Keras)"
 readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
 requires-python = ">=3.11,<3.14"
 authors = [{ name = "Nat Lee" }]
 keywords = ["text preprocessing", "sentiment analysis", "imdb", "cnn", "lstm", "keras", "reproducibility"]

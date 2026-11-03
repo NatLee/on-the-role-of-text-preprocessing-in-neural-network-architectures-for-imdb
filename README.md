@@ -11,6 +11,7 @@
   <img src="https://img.shields.io/badge/Keras%203.15-TensorFlow%202.21-orange" alt="Keras 3.15 on TensorFlow 2.21">
   <a href="https://aclanthology.org/W18-5406/"><img src="https://img.shields.io/badge/paper-BlackboxNLP%202018-b31b1b" alt="Paper: BlackboxNLP 2018"></a>
   <a href="#how-to-cite"><img src="https://img.shields.io/badge/cite-CITATION.cff-green" alt="How to cite"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache--2.0-blue" alt="License: Apache-2.0"></a>
 </p>
 
 # Text preprocessing in neural networks: the IMDb experiments
@@ -286,6 +287,26 @@ please also cite the dataset:
   url       = {https://aclanthology.org/P11-1015/},
 }
 ```
+
+## License
+
+The code is licensed under the [Apache License 2.0](LICENSE). If you redistribute it, the [`NOTICE`](NOTICE)
+file has to go with it; it asks you to cite this software and the original paper.
+
+What the licence covers, and what it does not:
+
+- **The current code and docs.** Everything in the current tree except the data was written in the 2026
+  rewrite and is covered by the licence.
+- **Older history.** The 2019 commits contain `__main__.py` and `prepare_dataset.py`, which were adapted
+  from the authors' [sensecnn](https://github.com/pilehvar/sensecnn) code. sensecnn has no licence, so
+  those two files are not covered. They are no longer part of the code.
+- **The bundled IMDb data** (`data/IMDb/multiword/`) is the Large Movie Review Dataset of Maas et al.
+  (2011), as preprocessed and published by Camacho-Collados and Pilehvar. Neither of them states a
+  licence: the dataset page asks you to cite Maas et al. (2011), and the paper's authors ask you to
+  acknowledge the original sources and cite their paper. The Apache licence does not apply to it.
+- **The downloaded files** (the other three variants and the UMBC embeddings) come from the paper's
+  authors, who state no licence either and ask you to cite their paper. The Apache licence does not
+  apply to them.
 
 ## Credits
 
