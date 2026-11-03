@@ -105,26 +105,47 @@ accuracy of two different runs".
 
 ## Results
 
-Accuracy (%) on the 25,000 IMDb test reviews, as reported in the paper (mean of two runs; † marks a
-result significantly below the best one in its column).
+Accuracy (%) on the 25,000 IMDb test reviews. **Paper** is copied from the paper's Tables 2 and 3 (mean
+of two runs; † marks a result significantly below the best one in its column). **This repo** is our own
+run of the commands above on CPU (Docker, Python 3.12, TensorFlow 2.21, Keras 3.15): the mean of seeds
+1337 and 1338 like the paper, except the cells marked ¹, which are one run (seed 1337) to save time.
 
-Same preprocessing for the text and the embeddings (the paper's Table 2):
+Same preprocessing for the text and the embeddings (Table 2):
 
-| Preprocessing | CNN | CNN+LSTM |
-|---|---:|---:|
-| vanilla | 87.5 | 88.9 |
-| lowercased | 84.2† | 88.3† |
-| lemmatized | 86.8† | 87.7† |
-| multiword | 87.9 | 88.9 |
+| Preprocessing | CNN, paper | CNN, this repo | CNN+LSTM, paper | CNN+LSTM, this repo |
+|---|---:|---:|---:|---:|
+| vanilla | 87.5 | 85.9 | 88.9 | 88.6 |
+| lowercased | 84.2† | 86.4 | 88.3† | 89.3 |
+| lemmatized | 86.8† | 86.5 | 87.7† | 88.9 |
+| multiword | 87.9 | 86.1 | 88.9 | 89.1 |
 
-Vanilla text, embeddings trained on differently preprocessed text (the paper's Table 3):
+Vanilla text, embeddings trained on differently preprocessed text (Table 3; the vanilla row is the same
+experiment as in Table 2):
 
-| Embeddings trained on | CNN | CNN+LSTM |
-|---|---:|---:|
-| vanilla | 87.5† | 88.9 |
-| lowercased | 85.4† | 88.0† |
-| lemmatized | 86.8† | 86.6† |
-| multiword | 88.1 | 87.3† |
+| Embeddings trained on | CNN, paper | CNN, this repo | CNN+LSTM, paper | CNN+LSTM, this repo |
+|---|---:|---:|---:|---:|
+| vanilla | 87.5† | 85.9 | 88.9 | 88.6 |
+| lowercased | 85.4† | 86.6¹ | 88.0† | 88.9¹ |
+| lemmatized | 86.8† | 85.9¹ | 86.6† | 89.0¹ |
+| multiword | 88.1 | 86.3¹ | 87.3† | 89.0¹ |
+
+What we take from it:
+
+- **Same ballpark, same winner.** Every number lands between 85.9 and 89.3, and the CNN+LSTM beats the
+  CNN in every row, as in the paper.
+- **Our CNN is 1 to 2 points below the paper's** for vanilla and multiword. Its code was never published
+  (see [Models](#models)), so part of the gap may be our reading of it.
+- **The preprocessing ranking does not come back.** Across the four variants our results move by at most
+  0.7 points, while the same setup with a different seed moved by up to 1.5 points (vanilla CNN+LSTM:
+  87.8 and 89.3). With two seeds we can neither confirm nor rule out the paper's gaps, for example its
+  84.2 for lowercased text with the CNN.
+- **Fine-tuning hides missing vectors.** With vanilla text, the lowercased embeddings have vectors for
+  only 13,265 of the 19,998 vocabulary words (capitalised words are missing) and the lemmatized ones for
+  16,417, yet accuracy hardly changes, because the embeddings keep training.
+
+Each run left a `results.json`; all 22 are in [`docs/results/`](docs/results/), with their settings,
+versions, training history and timing. On 10 to 11 CPU cores one CNN run trained in 5 to 8 minutes and
+one CNN+LSTM run in 13 to 19 minutes, three runs at a time.
 
 ## How it works
 

@@ -1,0 +1,68 @@
+{
+  "config": {
+    "preprocessing": "vanilla",
+    "model": "cnn",
+    "data_dir": "data/IMDb",
+    "embeddings": "/emb/umbc-lowercased.bin",
+    "embedding_dim": 300,
+    "freeze_embeddings": false,
+    "vocab_size": 20000,
+    "max_len": null,
+    "epochs": 3,
+    "batch_size": 100,
+    "validation_split": 0.0,
+    "patience": 0,
+    "per_class": null,
+    "seed": 1337,
+    "runs": 1,
+    "output_dir": "results/table3/vanilla-text_lowercased-emb",
+    "hyperparameters": {
+      "dropout": 0.5,
+      "filters": 50,
+      "kernel_size": 2,
+      "pool_size": 2,
+      "lstm_units": 25
+    }
+  },
+  "data": {
+    "train_reviews": 25000,
+    "validation_reviews": 0,
+    "test_reviews": 25000,
+    "max_len": 2780,
+    "vocabulary_ids": 20000,
+    "test_token_coverage": 0.9593,
+    "embedding_dim": 300,
+    "embeddings_found": 13265
+  },
+  "runs": [
+    {
+      "seed": 1337,
+      "test_accuracy": 0.8660399913787842,
+      "test_loss": 0.31239643692970276,
+      "epochs_trained": 3,
+      "train_seconds": 403.3,
+      "history": {
+        "accuracy": [
+          0.663919985294342,
+          0.801639974117279,
+          0.8426399827003479
+        ],
+        "loss": [
+          0.6413211822509766,
+          0.42568808794021606,
+          0.3523799180984497
+        ]
+      }
+    }
+  ],
+  "mean_test_accuracy": 0.8660399913787842,
+  "environment": {
+    "python": "3.12.16",
+    "platform": "Linux-5.15.167.4-microsoft-standard-WSL2-x86_64-with-glibc2.41",
+    "preproc_imdb": "1.0.0",
+    "keras": "3.15.1",
+    "backend": "tensorflow",
+    "backend_version": "2.21.0",
+    "numpy": "2.4.4"
+  }
+}
