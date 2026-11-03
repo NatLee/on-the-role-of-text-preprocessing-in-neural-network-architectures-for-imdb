@@ -1,0 +1,164 @@
+<!doctype html>
+<!--
+  README diagram: the two models, layer by layer, with tensor shapes for a review of L tokens. Render the
+  light and dark versions (#dark picks the dark theme) with a Chromium-based browser, e.g.
+    msedge --headless=new --hide-scrollbars --force-device-scale-factor=2 --window-size=960,470
+           --default-background-color=00000000 --virtual-time-budget=5000
+           --screenshot=models-dark.png "file:///…/models.html#dark"
+  and shrink the result to a 128-colour palette (ImageMagick):
+    magick models-dark.png -strip -dither None -colors 128 PNG8:models-dark.png
+  Parameter counts: model.count_params() with the default settings (20,000 ids, 300 dimensions).
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>preproc-imdb models</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=block" rel="stylesheet">
+<style>
+  :root {
+    --bg: #ffffff; --bg2: #f6f8fa; --ink: #1f2328; --muted: #59636e; --line: #d1d9e0; --card: #ffffff;
+    --blue: #0969da; --green: #1a7f37; --violet: #8250df; --orange: #bc4c00;
+    --shadow: 0 1px 2px rgba(31,35,40,.06), 0 6px 18px rgba(31,35,40,.06);
+    --tint1: rgba(130,80,223,.09); --tint2: rgba(9,105,218,.08); --wire: #afb8c1;
+  }
+  .dark {
+    --bg: #0d1117; --bg2: #151b23; --ink: #f0f6fc; --muted: #9198a1; --line: #3d444d; --card: #151b23;
+    --blue: #4493f8; --green: #3fb950; --violet: #ab7df8; --orange: #f0883e;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 24px rgba(0,0,0,.35);
+    --tint1: rgba(171,125,248,.14); --tint2: rgba(68,147,248,.12); --wire: #656c76;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; background: transparent; }
+  body { width: 960px; height: 470px; font-family: Inter, "Segoe UI", sans-serif; color: var(--ink); }
+  .frame { position: relative; width: 960px; height: 470px; border-radius: 22px; overflow: hidden;
+           border: 1px solid var(--line);
+           background: radial-gradient(520px 300px at 96% 4%, var(--tint1), transparent 70%),
+                       radial-gradient(420px 260px at 0% 100%, var(--tint2), transparent 70%), var(--bg); }
+  .dots { position: absolute; inset: 0; opacity: .5;
+          background-image: radial-gradient(var(--line) 1px, transparent 1.2px); background-size: 22px 22px;
+          -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 60%, #000 100%); }
+
+  header { position: absolute; left: 44px; top: 30px; }
+  h1 { margin: 0; font-size: 30px; font-weight: 800; letter-spacing: -0.03em; line-height: 1; }
+  .tag { margin: 8px 0 0; font-size: 15px; color: var(--muted); }
+  .tag b { color: var(--ink); font-weight: 600; }
+
+  .box { position: absolute; background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+         box-shadow: var(--shadow); padding: 10px 13px; height: 72px; }
+  .name { font-size: 10.5px; font-weight: 700; letter-spacing: .11em; text-transform: uppercase; color: var(--muted);
+          display: flex; align-items: center; gap: 7px; }
+  .name i { width: 7px; height: 7px; border-radius: 50%; background: var(--blue); flex: none; }
+  .what { font-family: "JetBrains Mono", Consolas, monospace; font-size: 12.5px; margin-top: 6px; white-space: nowrap; }
+  .shape { font-family: "JetBrains Mono", Consolas, monospace; font-size: 11.5px; color: var(--muted); margin-top: 3px; white-space: nowrap; }
+  .shape b { color: var(--orange); font-weight: 600; }
+  .head .name i { background: var(--violet); }
+  .out .name i { background: var(--green); }
+
+  .trunk { left: 44px; width: 244px; }
+  #ids   { top: 100px; }
+  #emb   { top: 186px; }
+  #drop  { top: 272px; }
+  #conv  { top: 358px; }
+
+  .row-label { position: absolute; left: 352px; font-size: 13px; color: var(--muted); }
+  .row-label b { font-family: "JetBrains Mono", Consolas, monospace; font-size: 13px; color: var(--violet); font-weight: 600;
+                 padding: 2px 9px; border: 1px solid var(--violet); border-radius: 999px; margin-right: 8px; }
+  .row-label span { margin-left: 8px; font-family: "JetBrains Mono", Consolas, monospace; font-size: 11.5px; }
+  #cnn-label  { top: 106px; }
+  #lstm-label { top: 256px; }
+
+  .col1 { left: 352px; width: 192px; }
+  .col2 { left: 568px; width: 172px; }
+  .col3 { left: 764px; width: 152px; }
+  .cnn  { top: 140px; }
+  .lstm { top: 290px; }
+
+  .foot { position: absolute; left: 352px; top: 398px; width: 564px; font-size: 12.5px; color: var(--muted); line-height: 1.5; }
+  .foot code { font-family: "JetBrains Mono", Consolas, monospace; font-size: 11.5px; color: var(--ink); }
+
+  svg.wires { position: absolute; inset: 0; }
+  .wire { fill: none; stroke: var(--wire); stroke-width: 2; stroke-dasharray: 5 6; }
+  .arrow { fill: var(--wire); }
+</style>
+</head>
+<body>
+<script>if (location.hash === '#dark') document.documentElement.className = 'dark';</script>
+<div class="frame">
+  <div class="dots"></div>
+
+  <header>
+    <h1>Two models, one trunk</h1>
+    <p class="tag">Shapes for one review of <b>L</b> tokens. Sizes are the defaults from the paper's code.</p>
+  </header>
+
+  <svg class="wires" width="960" height="470">
+    <!-- trunk, top to bottom -->
+    <path class="wire" d="M166 174 V178"/><path class="arrow" d="M166 184 l-5 -9 h10 z"/>
+    <path class="wire" d="M166 260 V264"/><path class="arrow" d="M166 270 l-5 -9 h10 z"/>
+    <path class="wire" d="M166 346 V350"/><path class="arrow" d="M166 356 l-5 -9 h10 z"/>
+    <!-- fork from the convolution into both heads -->
+    <path class="wire" d="M290 394 C 322 394, 314 176, 344 176"/><path class="arrow" d="M350 176 l-9 -5 v10 z"/>
+    <path class="wire" d="M290 394 C 322 394, 314 326, 344 326"/><path class="arrow" d="M350 326 l-9 -5 v10 z"/>
+    <!-- cnn: the pooled features skip the LSTM column -->
+    <path class="wire" d="M546 176 H756"/><path class="arrow" d="M762 176 l-9 -5 v10 z"/>
+    <!-- cnn-lstm -->
+    <path class="wire" d="M546 326 H560"/><path class="arrow" d="M566 326 l-9 -5 v10 z"/>
+    <path class="wire" d="M742 326 H756"/><path class="arrow" d="M762 326 l-9 -5 v10 z"/>
+  </svg>
+
+  <div class="box trunk" id="ids">
+    <div class="name"><i></i>Word ids</div>
+    <div class="what">L ids, 0 = padding</div>
+    <div class="shape">→ <b>L</b></div>
+  </div>
+  <div class="box trunk" id="emb">
+    <div class="name"><i></i>Embedding · 6,000,000</div>
+    <div class="what">20,000 × 300</div>
+    <div class="shape">→ <b>L × 300</b> · random or word2vec</div>
+  </div>
+  <div class="box trunk" id="drop">
+    <div class="name"><i></i>Dropout</div>
+    <div class="what">rate 0.5</div>
+    <div class="shape">→ <b>L × 300</b></div>
+  </div>
+  <div class="box trunk" id="conv">
+    <div class="name"><i></i>Conv1D + ReLU · 30,050</div>
+    <div class="what">50 filters, width 2</div>
+    <div class="shape">→ <b>(L − 1) × 50</b></div>
+  </div>
+
+  <div class="row-label" id="cnn-label"><b>cnn</b>the paper's CNN, our reading of "similar to Kim (2014)"<span>6,030,101 weights</span></div>
+  <div class="box head cnn col1">
+    <div class="name"><i></i>Global max pooling</div>
+    <div class="what">max over time</div>
+    <div class="shape">→ <b>50</b></div>
+  </div>
+  <div class="box out cnn col3">
+    <div class="name"><i></i>Dense · 51</div>
+    <div class="what">1 unit, sigmoid</div>
+    <div class="shape">→ <b>P(positive)</b></div>
+  </div>
+
+  <div class="row-label" id="lstm-label"><b>cnn-lstm</b>the paper's CNN+LSTM, as in the sensecnn code<span>6,045,301 weights</span></div>
+  <div class="box head lstm col1">
+    <div class="name"><i></i>Max pooling</div>
+    <div class="what">pool size 2</div>
+    <div class="shape">→ <b>⌊(L − 1) / 2⌋ × 50</b></div>
+  </div>
+  <div class="box head lstm col2">
+    <div class="name"><i></i>BiLSTM · 15,200</div>
+    <div class="what">25 + 25 units</div>
+    <div class="shape">→ <b>50</b> (last states)</div>
+  </div>
+  <div class="box out lstm col3">
+    <div class="name"><i></i>Dense · 51</div>
+    <div class="what">1 unit, sigmoid</div>
+    <div class="shape">→ <b>P(positive)</b></div>
+  </div>
+
+  <div class="foot">Both: binary cross-entropy, Adam (learning rate 0.001), batch 100, 3 epochs.
+    Change any size with <code>--filters</code>, <code>--kernel-size</code>, <code>--pool-size</code>, <code>--lstm-units</code>, <code>--dropout</code>.</div>
+</div>
+</body>
+</html>
